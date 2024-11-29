@@ -1,4 +1,4 @@
-type userTypeDef = `#graphql
+const userTypeDef = `#graphql
 
 type User{
   id:ID!
@@ -33,3 +33,4 @@ type LogoutResponse{
   message:String!
 }
 `;
+export default userTypeDef

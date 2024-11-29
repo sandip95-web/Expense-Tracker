@@ -1,32 +1,18 @@
 import { config } from "dotenv";
 import { ApolloServer } from "@apollo/server";
 import { startStandaloneServer } from "@apollo/server/standalone";
-import schema from "./graphql/schema/schemas";
-import axios from "axios";
-import { getUser, getUserPost, getUsers, getUserTodos } from "./controllers/userController";
+import mergedResolver from "./resolvers/merge_resolver";
+import mergedTypeDefs from "./typeDefs/merge_typeDefs";
+import { BaseContext } from "@apollo/server";
+
 config();
-// const serverStart = async () => {
-//   const port = process.env.PORT || 4444;
 
-//   app.listen(port, () => {
-//     console.log(`Listening from Port: ${port}`);
-//   });
-// };
 
-// serverStart();
+
 const port = Number(process.env.PORT) || 4444;
-const server = new ApolloServer({
-  typeDefs: schema,
-  resolvers: {
-    Query: {
-      users: getUsers,
-      user:getUser
-    },
-    User:{
-      post:getUserPost,
-      todo:getUserTodos 
-    },
-  },
+const server = new ApolloServer<BaseContext>({
+  typeDefs: mergedTypeDefs,
+  resolvers:mergedResolver,
 });
 startStandaloneServer(server, {
   listen: {
