@@ -4,7 +4,6 @@ import cors from 'cors';
 import { expressMiddleware } from "@apollo/server/express4";
 import { ApolloServerPluginDrainHttpServer } from "@apollo/server/plugin/drainHttpServer";
 import { ApolloServer } from "@apollo/server";
-import { startStandaloneServer } from "@apollo/server/standalone";
 import mergedResolver from "./resolvers/merge_resolver.js";
 import mergedTypeDefs from "./typeDefs/merge_typeDefs.js";
 import { BaseContext } from "@apollo/server";
