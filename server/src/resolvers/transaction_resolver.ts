@@ -1,4 +1,4 @@
-import { users } from "../data/_db";
+import { users } from "../data/_db.js";
 
 const transactionResolver = {
   Query: {},

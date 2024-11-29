@@ -28,7 +28,7 @@ input createTransactionInput{
 		location: String!
 		date: String!
 }
-type updateTransactionInput{
+input updateTransactionInput{
   transactionId: String!
 		description: String!
 		paymentType: String!
