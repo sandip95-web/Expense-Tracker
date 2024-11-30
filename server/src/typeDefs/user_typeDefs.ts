@@ -3,7 +3,7 @@ const userTypeDef = `#graphql
 type User{
   _id:ID!
   username:String!
-  name:String!
+  email:String!
   password:String!
   profilePicture:String!
   gender:String!
@@ -15,18 +15,18 @@ type Query{
 }
 
 type Mutation{
-  signUp(input:SignUpInput):User
+  signup(input:SignUpInput):User
   login(input:LoginInput):User
   logout:LogoutResponse
 }
 input SignUpInput{
   username:String!
-  name:String!
+  email:String!
   password:String!
   gender:String!
 }
 input LoginInput{
-  username:String!
+  email:String!
   password:String!
 }
 type LogoutResponse{

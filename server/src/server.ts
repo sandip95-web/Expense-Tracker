@@ -14,8 +14,10 @@ import { config } from "./config/config.js";
 import dbConnection from "./config/dbConnection.js";
 import { buildContext } from "graphql-passport";
 import globalErrorHandler from "./middleware/globalErrorHandler.js";
+import { configurePassport } from "./config/passportConfig.js";
 
 await dbConnection();
+configurePassport();
 const app = express();
 
 const httpServer = http.createServer(app);
@@ -36,7 +38,7 @@ app.use(
       maxAge: 1000 * 60 * 60 * 24 * 7,
       httpOnly: true,
     },
-    store
+    store,
   })
 );
 app.use(passport.initialize());
@@ -52,13 +54,15 @@ await server.start();
 app.use(
   "/",
   cors<cors.CorsRequest>({
-    origin:"http://localhost:5173",
-    credentials:true
+    origin: "http://localhost:5173",
+    credentials: true,
   }),
   express.json(),
 
   expressMiddleware(server, {
-    context: async ({ req,res }) => buildContext({ req,res }),
+    context: async ({ req, res }) => {
+      return buildContext({ req, res });
+    },
   })
 );
 app.use(globalErrorHandler);

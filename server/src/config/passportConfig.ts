@@ -1,6 +1,6 @@
 import passport from "passport";
 import { User } from "../types/types";
-import userModel from "../model/userModel";
+import userModel from "../model/userModel.js";
 import { GraphQLLocalStrategy } from "graphql-passport";
 import bcrypt from "bcryptjs";
 import createHttpError from "http-errors";
@@ -24,16 +24,18 @@ export const configurePassport = async () => {
   passport.use(
     new GraphQLLocalStrategy(async (email: string, password: string, done) => {
       try {
-        const userExist = await userModel.findOne({ email });
+        const userExist = await userModel
+          .findOne({ email })
+          .select("+password");
         if (!userExist) {
-          throw createHttpError(400, "User with that email doen't exist");
+          throw new Error("User with that email don't exist")
         }
         const validatePassword = await bcrypt.compare(
           password,
           userExist.password
         );
         if (!validatePassword) {
-          throw createHttpError(400, "Invalid username or password.");;
+          throw new Error("Invalid username or password.");
         }
         return done(null, userExist);
       } catch (error) {
