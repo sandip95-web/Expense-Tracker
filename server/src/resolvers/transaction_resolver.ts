@@ -1,13 +1,16 @@
-import { users } from "../data/_db.js";
 import transactionMode from "../model/transactionMode.js";
-import { Transaction } from "../types/types.js";
+import { Transaction, User } from "../types/types.js";
 
 const transactionResolver = {
   Query: {
-    transactions: async (_, __, context): Promise<Transaction[] | null> => {
+    transactions: async (
+      _: unknown,
+      __: unknown,
+      context: { getUser: () => User | null }
+    ): Promise<Transaction[] | null> => {
       try {
         if (!context.getUser()) throw new Error("Unauthorized");
-        const userId = await context.getUser()._id;
+        const userId = context.getUser()._id;
         const transactions = await transactionMode.find({ userId });
         if (!transactions || transactions.length === 0) {
           return null;
@@ -19,13 +22,13 @@ const transactionResolver = {
       }
     },
     transaction: async (
-      _,
+      _: unknown,
       { transactionId }: { transactionId: string }
     ): Promise<Transaction | null> => {
       try {
         const transaction = await transactionMode.findById(transactionId);
         if (!transaction) {
-          return null; // No transaction found with the given transactionId
+          return null;
         }
         return transaction;
       } catch (error) {
@@ -34,7 +37,25 @@ const transactionResolver = {
       }
     },
   },
-  Mutation: {},
+  Mutation: {
+    createTransaction: async (
+      _: unknown,
+      { input },
+      context: { getUser: () => User | null }
+    ): Promise<Transaction | null> => {
+      try {
+        const newTransaction = await transactionMode.create({
+          ...input,
+          userId: context.getUser()._id,
+        });
+
+        return newTransaction;
+      } catch (err) {
+        console.error("Error creating transaction:", err);
+        throw new Error("Error creating transaction");
+      }
+    },
+  },
 };
 
 export default transactionResolver;
