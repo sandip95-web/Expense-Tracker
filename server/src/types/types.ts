@@ -9,8 +9,8 @@ export interface User {
   gender: string;
 }
 export interface Transaction {
-  _id: ObjectId;
-  userId: mongoose.Schema.Types.ObjectId;
+  _id: string;
+  userId:string;
   description: string;
   paymentType: string;
   category: string;
