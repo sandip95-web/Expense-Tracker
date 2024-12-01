@@ -55,6 +55,36 @@ const transactionResolver = {
         throw new Error("Error creating transaction");
       }
     },
+    updateTransaction: async (
+      _: unknown,
+      { input }
+    ): Promise<Transaction | null> => {
+      try {
+        const updatedTransaction = await transactionMode.findByIdAndUpdate(
+          input.transactionId,
+          input,
+          { new: true }
+        );
+        return updatedTransaction;
+      } catch (err) {
+        console.error("Error updating transaction:", err);
+        throw new Error("Error updating transaction");
+      }
+    },
+    deleteTransaction: async (
+      _: unknown,
+      { transactionId }
+    ): Promise<Transaction | null> => {
+      try {
+        const deleteTransaction = await transactionMode.findByIdAndDelete(
+          transactionId
+        );
+        return deleteTransaction;
+      } catch (err) {
+        console.error("Error updating transaction:", err);
+        throw new Error("Error updating transaction");
+      }
+    },
   },
 };
 
