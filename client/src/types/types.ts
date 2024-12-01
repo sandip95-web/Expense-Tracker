@@ -26,3 +26,12 @@ export interface Login{
   email:string;
   password:string;
 }
+
+export interface TransactionFormData {
+  description: string;
+  paymentType: string;
+  category: string;
+  amount: string;
+  location: string;
+  date: string;
+}
