@@ -7,14 +7,13 @@ import { ChartData } from "../../types/types";
 import TransactionForm from "./TransactionForm";
 import Cards from "../Cards";
 
-// Registering chart.js elements
+
 ChartJS.register(ArcElement, Tooltip, Legend);
 
-// TypeScript interface for chart data structure
 
 
 const HomePage: React.FC = () => {
-  // Define chart data with TypeScript type checking
+
   const chartData: ChartData = {
     labels: ["Saving", "Expense", "Investment"],
     datasets: [
@@ -31,12 +30,11 @@ const HomePage: React.FC = () => {
     ],
   };
 
-  // Handle logout function
   const handleLogout = () => {
     console.log("Logging out...");
   };
 
-  // Loading state for showing a spinner
+ 
   const loading = false;
 
   return (
@@ -53,7 +51,7 @@ const HomePage: React.FC = () => {
         {!loading && (
           <MdLogout className="mx-2 w-5 h-5 cursor-pointer" onClick={handleLogout} />
         )}
-        {/* loading spinner */}
+    
         {loading && <div className="w-6 h-6 border-t-2 border-b-2 mx-2 rounded-full animate-spin"></div>}
       </div>
 

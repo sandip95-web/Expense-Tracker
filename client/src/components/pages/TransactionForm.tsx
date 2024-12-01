@@ -40,7 +40,7 @@ const TransactionForm = () => {
         <div className="w-full md:w-1/2">
           <label className="text-white text-sm font-semibold mb-2" htmlFor="paymentType">
             Payment Type
-          </label>
+          </label>&nbsp;&nbsp;
           <select
             className="px-4 py-3 bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-md transition-all ease-in-out duration-300"
             id="paymentType"
@@ -55,7 +55,7 @@ const TransactionForm = () => {
         <div className="w-full md:w-1/2">
           <label className="text-white text-sm font-semibold mb-2" htmlFor="category">
             Category
-          </label>
+          </label>&nbsp;&nbsp;
           <select
             className="px-4 py-3 bg-white text-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-md transition-all ease-in-out duration-300"
             id="category"
