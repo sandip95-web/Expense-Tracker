@@ -35,3 +35,16 @@ export interface TransactionFormData {
   location: string;
   date: string;
 }
+export interface ChartData {
+  labels: string[];
+  datasets: {
+    label: string;
+    data: number[];
+    backgroundColor: string[];
+    borderColor: string[];
+    borderWidth: number;
+    borderRadius: number;
+    spacing: number;
+    cutout: number;
+  }[];
+}
