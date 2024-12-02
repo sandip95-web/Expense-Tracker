@@ -2,13 +2,19 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import InputField from "../common/InputField";
 import { Login } from "../../types/types";
+import { useMutation } from "@apollo/client";
+import { LoginUser } from "../../graphql/types/userType";
+import { LOGIN_USER } from "../../graphql/mutations/userMutation";
+import toast from "react-hot-toast";
 
 const LoginPage = () => {
   const [loginData, setLoginData] = useState<Login>({
     email: "",
     password: "",
   });
-
+  const [login, { loading }] = useMutation<LoginUser>(LOGIN_USER, {
+    refetchQueries: ["GetAuthenticatedUser"],
+  });
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setLoginData((prevData) => ({
@@ -17,9 +23,25 @@ const LoginPage = () => {
     }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(loginData);
+    try {
+      if (!loginData.email || !loginData.password) {
+        return toast.error("Please fill in all fields");
+      }
+      const result = await login({
+        variables: {
+          input: loginData,
+        },
+      });
+
+      if (result.data) {
+        toast.success("Login Successfully.");
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+      toast.error((error as Error).message);
+    }
   };
 
   return (
@@ -51,8 +73,9 @@ const LoginPage = () => {
             <button
               type="submit"
               className="w-full py-3 rounded-lg text-white bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 transition-all duration-300 shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500"
+              disabled={loading}
             >
-              Login
+              {loading ? "Loading...." : "Login "}
             </button>
           </form>
           <div className="mt-6 text-center">

@@ -3,15 +3,36 @@ import { Link } from "react-router-dom";
 import InputField from "../common/InputField";
 import RadioButton from "../common/RadioButton";
 import { SignUp } from "../../types/types";
+import { useMutation } from "@apollo/client";
+import { SIGN_UP_USER } from "../../graphql/mutations/userMutation";
+import { signUpUserResponse } from "../../graphql/types/userType";
+import toast from "react-hot-toast";
 
 const SignUpPage = () => {
   const [signUpData, setSignUpData] = useState<SignUp>({
-    name: "",
     username: "",
+    email: "",
     password: "",
     gender: "",
   });
+  const [signup, { loading}] =
+    useMutation<signUpUserResponse>(SIGN_UP_USER,{
+      refetchQueries:["GetAuthenticatedUser"]
+    });
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    try {
+      await signup({
+        variables: {
+          input: signUpData,
+        },
+      });
+    } catch (error) {
+      console.log("Error: ",error)
+      toast.error((error as Error).message);
+    }
+  };
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type } = e.target;
 
@@ -28,11 +49,6 @@ const SignUpPage = () => {
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    console.log(signUpData);
-  };
-
   return (
     <div className="h-screen flex justify-center items-center">
       <div className="flex rounded-lg overflow-hidden z-50 bg-gray-300">
@@ -46,10 +62,10 @@ const SignUpPage = () => {
             </h1>
             <form className="space-y-4" onSubmit={handleSubmit}>
               <InputField
-                label="Full Name"
-                id="name"
-                name="name"
-                value={signUpData.name}
+                label="Email"
+                id="email"
+                name="email"
+                value={signUpData.email}
                 onChange={handleChange}
               />
               <InputField
@@ -91,8 +107,9 @@ const SignUpPage = () => {
                 <button
                   type="submit"
                   className="w-full bg-black text-white p-2 rounded-md hover:bg-gray-800 focus:outline-none focus:bg-black  focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                  disabled={loading}
                 >
-                  Sign Up
+                  {loading ? "Loading..." : "Sign Up"}
                 </button>
               </div>
             </form>

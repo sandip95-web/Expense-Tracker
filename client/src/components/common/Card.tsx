@@ -5,8 +5,15 @@ import { FaSackDollar } from "react-icons/fa6";
 import { FaTrash } from "react-icons/fa";
 import { HiPencilAlt } from "react-icons/hi";
 import { Link } from "react-router-dom";
+import { FC } from "react";
+import { Transaction } from "../../graphql/types/transactionTypes";
+import { AuthUser } from "../../graphql/types/userType";
 
-type CardType = 'saving' | 'expense' | 'investment'; 
+interface CardProp {
+  transaction: Transaction;
+  auth: AuthUser;
+}
+type CardType = "saving" | "expense" | "investment";
 
 const categoryColorMap: Record<CardType, string> = {
   saving: "from-green-700 to-green-400",
@@ -14,9 +21,8 @@ const categoryColorMap: Record<CardType, string> = {
   investment: "from-blue-700 to-blue-400",
 };
 
-const Card = ({ cardType }: { cardType: CardType }) => {
-  const cardClass = categoryColorMap[cardType];
-
+const Card: FC<CardProp> = ({ transaction, auth }) => {
+  const cardClass = categoryColorMap[transaction.category as CardType];
   return (
     <div
       className={`rounded-md p-5 bg-gradient-to-br ${cardClass} shadow-lg hover:shadow-xl transition-shadow duration-300`}
@@ -36,24 +42,24 @@ const Card = ({ cardType }: { cardType: CardType }) => {
         </div>
         <p className="text-white flex items-center gap-2 text-sm">
           <BsCardText />
-          <span>Description: Salary</span>
+          <span>Description: {transaction.description}</span>
         </p>
         <p className="text-white flex items-center gap-2 text-sm">
           <MdOutlinePayments />
-          <span>Payment Type: Cash</span>
+          <span>Payment Type:{transaction.paymentType}</span>
         </p>
         <p className="text-white flex items-center gap-2 text-sm">
           <FaSackDollar />
-          <span>Amount: $150</span>
+          <span>Amount: ${transaction.amount}</span>
         </p>
         <p className="text-white flex items-center gap-2 text-sm">
           <FaLocationDot />
-          <span>Location: New York</span>
+          <span>Location: {transaction.location}</span>
         </p>
         <div className="flex justify-between items-center">
-          <p className="text-xs text-white font-bold">21 Sep, 2001</p>
+          <p className="text-xs text-white font-bold">{transaction.date}</p>
           <img
-            src="https://tecdn.b-cdn.net/img/new/avatars/2.webp"
+            src={auth.profilePicture}
             className="h-10 w-10 border-2 border-white rounded-full shadow-md"
             alt="Profile"
           />

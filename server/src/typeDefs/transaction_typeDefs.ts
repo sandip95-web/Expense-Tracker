@@ -38,4 +38,4 @@ input updateTransactionInput{
 		date: String!
 }
 `;
-export default transactionTypeDef;
+
