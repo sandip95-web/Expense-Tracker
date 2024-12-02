@@ -52,7 +52,7 @@ const server = new ApolloServer<BaseContext>({
 await server.start();
 
 app.use(
-  "/",
+  "/graphql",
   cors<cors.CorsRequest>({
     origin: "http://localhost:5173",
     credentials: true,
