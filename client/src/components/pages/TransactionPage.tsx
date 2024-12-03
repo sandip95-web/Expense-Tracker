@@ -14,7 +14,9 @@ const TransactionPage = () => {
     },
   });
 
-  const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION);
+  const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION,{
+    refetchQueries:["GetTransactionStatistics"]
+  });
 
   const [formData, setFormData] = useState({
     description: "",

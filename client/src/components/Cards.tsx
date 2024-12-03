@@ -14,20 +14,28 @@ const Cards = () => {
   if (loading) return <div>Loading....</div>;
 
   return (
-    <div className="w-full px-10 min-h-[40vh]">
-      <p className="text-5xl font-bold text-center my-10">History</p>
-      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4 justify-start mb-20">
-        {!loading &&
-          data?.transactions.map((transaction) => (
+    <div className="w-full px-10 min-h-[40vh]  py-10">
+      <p className="text-5xl font-extrabold text-center my-10 text-gradient bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent drop-shadow-md">
+        Transaction History
+      </p>
+      <div className="w-full grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 justify-start mb-20">
+        {!loading && data?.transactions?.length ? (
+          data.transactions.map((transaction) => (
             <Card
               key={transaction._id}
               transaction={transaction}
               auth={auth?.authUser as AuthUser}
             />
-          ))}
+          ))
+        ) : (
+          <p className="text-center text-gray-500 col-span-full mt-10 text-xl font-medium italic">
+            No transactions found
+          </p>
+        )}
       </div>
     </div>
   );
+  
 };
 
 export default Cards;

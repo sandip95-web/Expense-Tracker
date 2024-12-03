@@ -14,6 +14,7 @@ import { AuthUser } from "../../graphql/types/userType";
 import { useMutation } from "@apollo/client";
 import { DELETE_TRANSACTION } from "../../graphql/mutations/transactionMutation";
 import toast from "react-hot-toast";
+import { formatDate } from "../../utils/formatDate";
 
 interface CardProp {
   transaction: Transaction;
@@ -29,12 +30,10 @@ const categoryColorMap: Record<CardType, string> = {
 
 const Card: FC<CardProp> = ({ transaction, auth }) => {
   const cardClass = categoryColorMap[transaction.category as CardType];
-  const [deleteTransaction,{loading}] = useMutation<DeleteTransactionResponse>(
-    DELETE_TRANSACTION,
-    {
-      refetchQueries: ["GetAllTransaction"],
-    }
-  );
+  const [deleteTransaction, { loading }] =
+    useMutation<DeleteTransactionResponse>(DELETE_TRANSACTION, {
+      refetchQueries: ["GetAllTransaction", "GetTransactionStatistics"],
+    });
   const handleDelete = async () => {
     try {
       const result = await deleteTransaction({
@@ -89,7 +88,9 @@ const Card: FC<CardProp> = ({ transaction, auth }) => {
           <span>Location: {transaction.location}</span>
         </p>
         <div className="flex justify-between items-center">
-          <p className="text-xs text-white font-bold">{transaction.date}</p>
+          <p className="text-xs text-white font-bold">
+            {formatDate(transaction.date)}
+          </p>
           <img
             src={auth.profilePicture}
             className="h-10 w-10 border-2 border-white rounded-full shadow-md"
