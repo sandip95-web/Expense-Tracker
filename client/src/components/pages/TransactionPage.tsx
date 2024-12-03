@@ -1,6 +1,21 @@
-import { useState } from "react";
+import { useMutation, useQuery } from "@apollo/client";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { GET_TRANSACTION } from "../../graphql/queries/transactionQuery";
+import { UPDATE_TRANSACTION } from "../../graphql/mutations/transactionMutation";
+import toast from "react-hot-toast";
+import TransactionFormSkeleton from "../../skeletons/TransactionFormSkeleton";
 
 const TransactionPage = () => {
+  const { id } = useParams<{ id: string }>();
+  const { data, loading: getLoading } = useQuery(GET_TRANSACTION, {
+    variables: {
+      transactionId: id,
+    },
+  });
+
+  const [updateTransaction, { loading }] = useMutation(UPDATE_TRANSACTION);
+
   const [formData, setFormData] = useState({
     description: "",
     paymentType: "",
@@ -10,12 +25,45 @@ const TransactionPage = () => {
     date: "",
   });
 
+  useEffect(() => {
+    if (data?.transaction) {
+      setFormData({
+        description: data.transaction.description || "",
+        paymentType: data.transaction.paymentType || "",
+        category: data.transaction.category || "",
+        amount: data.transaction.amount || "",
+        location: data.transaction.location || "",
+        date: new Date(+data.transaction.date).toISOString().substring(0, 10),
+      });
+    }
+  }, [data]);
+  if (getLoading) return <TransactionFormSkeleton />;
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("formData", formData);
+    const amount = parseFloat(formData.amount);
+    try {
+      const result = await updateTransaction({
+        variables: {
+          input: {
+            ...formData,
+            amount,
+            transactionId: id,
+          },
+        },
+      });
+
+      if (result.data.updateTransaction) {
+        toast.success("Transaction Updated.");
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+      toast.error((error as Error).message);
+    }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleInputChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData((prevFormData) => ({
       ...prevFormData,
@@ -39,7 +87,7 @@ const TransactionPage = () => {
               Transaction
             </label>
             <input
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:outline-none"
+              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-pink-500 focus:outline-none text-black"
               id="description"
               name="description"
               type="text"
@@ -59,7 +107,7 @@ const TransactionPage = () => {
                 Payment Type
               </label>
               <select
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none text-black"
                 id="paymentType"
                 name="paymentType"
                 value={formData.paymentType}
@@ -79,7 +127,7 @@ const TransactionPage = () => {
                 Category
               </label>
               <select
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="text-black w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 id="category"
                 name="category"
                 value={formData.category}
@@ -102,7 +150,7 @@ const TransactionPage = () => {
               Amount ($)
             </label>
             <input
-              className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+              className="text-black w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
               id="amount"
               name="amount"
               type="number"
@@ -122,7 +170,7 @@ const TransactionPage = () => {
                 Location
               </label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="text-black w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 id="location"
                 name="location"
                 type="text"
@@ -140,7 +188,7 @@ const TransactionPage = () => {
                 Date
               </label>
               <input
-                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                className="text-black w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:outline-none"
                 type="date"
                 name="date"
                 id="date"
@@ -155,7 +203,7 @@ const TransactionPage = () => {
             className="w-full py-3 text-white font-bold rounded-lg bg-gradient-to-br from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 transition-all focus:outline-none focus:ring-4 focus:ring-pink-400"
             type="submit"
           >
-            Update Transaction
+            {loading ? "Updating..." : "Update Transaction"}
           </button>
         </form>
       </div>

@@ -7,8 +7,12 @@ export interface Transaction {
   amount: number;
   location: string;
   date: string;
+  transactionId?:string;
 }
 
 export interface GetAllTransactionResponse{
   transactions:Transaction[]
+}
+export interface DeleteTransactionResponse{
+  deleteTransaction:Transaction[]
 }

@@ -29,7 +29,7 @@ input createTransactionInput{
 		date: String!
 }
 input updateTransactionInput{
-  transactionId: String!
+    transactionId: ID!
 		description: String!
 		paymentType: String!
 		category: String!
@@ -39,3 +39,4 @@ input updateTransactionInput{
 }
 `;
 
+export default transactionTypeDef

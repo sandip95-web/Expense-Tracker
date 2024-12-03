@@ -1,3 +1,4 @@
+import { GraphQLError } from "graphql";
 import transactionMode from "../model/transactionMode.js";
 import { Transaction, User } from "../types/types.js";
 
@@ -55,30 +56,38 @@ const transactionResolver = {
         throw new Error("Error creating transaction");
       }
     },
-    updateTransaction: async (
-      _: unknown,
-      { input }
-    ): Promise<Transaction | null> => {
+    updateTransaction: async (_: unknown, { input }) => {
+      const { transactionId, ...updateData } = input;
       try {
+        console.log("Received input:", input);
         const updatedTransaction = await transactionMode.findByIdAndUpdate(
-          input.transactionId,
-          input,
+          transactionId,
+          updateData,
           { new: true }
         );
+        if (!updatedTransaction) {
+          throw new GraphQLError("Transaction not found", {
+            extensions: { code: "NOT_FOUND" },
+          });
+        }
         return updatedTransaction;
       } catch (err) {
         console.error("Error updating transaction:", err);
-        throw new Error("Error updating transaction");
+        throw new GraphQLError("Failed to update transaction", {
+          extensions: { code: "INTERNAL_SERVER_ERROR" },
+        });
       }
     },
     deleteTransaction: async (
       _: unknown,
       { transactionId }
     ): Promise<Transaction | null> => {
+      console.log(transactionId);
       try {
         const deleteTransaction = await transactionMode.findByIdAndDelete(
           transactionId
         );
+
         return deleteTransaction;
       } catch (err) {
         console.error("Error updating transaction:", err);

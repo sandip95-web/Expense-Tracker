@@ -6,8 +6,14 @@ import { FaTrash } from "react-icons/fa";
 import { HiPencilAlt } from "react-icons/hi";
 import { Link } from "react-router-dom";
 import { FC } from "react";
-import { Transaction } from "../../graphql/types/transactionTypes";
+import {
+  DeleteTransactionResponse,
+  Transaction,
+} from "../../graphql/types/transactionTypes";
 import { AuthUser } from "../../graphql/types/userType";
+import { useMutation } from "@apollo/client";
+import { DELETE_TRANSACTION } from "../../graphql/mutations/transactionMutation";
+import toast from "react-hot-toast";
 
 interface CardProp {
   transaction: Transaction;
@@ -23,6 +29,27 @@ const categoryColorMap: Record<CardType, string> = {
 
 const Card: FC<CardProp> = ({ transaction, auth }) => {
   const cardClass = categoryColorMap[transaction.category as CardType];
+  const [deleteTransaction,{loading}] = useMutation<DeleteTransactionResponse>(
+    DELETE_TRANSACTION,
+    {
+      refetchQueries: ["GetAllTransaction"],
+    }
+  );
+  const handleDelete = async () => {
+    try {
+      const result = await deleteTransaction({
+        variables: {
+          transactionId: transaction._id,
+        },
+      });
+      if (result.data?.deleteTransaction) {
+        toast.success("Transaction Deleted.");
+      }
+    } catch (error) {
+      console.log("Error: ", error);
+      toast.error((error as Error).message);
+    }
+  };
   return (
     <div
       className={`rounded-md p-5 bg-gradient-to-br ${cardClass} shadow-lg hover:shadow-xl transition-shadow duration-300`}
@@ -31,8 +58,13 @@ const Card: FC<CardProp> = ({ transaction, auth }) => {
         <div className="flex flex-row items-center justify-between">
           <h2 className="text-xl font-semibold text-white">Transaction Type</h2>
           <div className="flex items-center gap-3">
-            <FaTrash className="cursor-pointer hover:text-red-500 transition-all duration-200" />
-            <Link to={`/transaction/123`}>
+            {!loading && (
+              <FaTrash className={"cursor-pointer"} onClick={handleDelete} />
+            )}
+            {loading && (
+              <div className="w-6 h-6 border-t-2 border-b-2  rounded-full animate-spin"></div>
+            )}
+            <Link to={`/transaction/${transaction._id}`}>
               <HiPencilAlt
                 className="cursor-pointer hover:text-yellow-500 transition-all duration-200"
                 size={22}

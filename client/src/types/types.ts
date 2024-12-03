@@ -48,3 +48,15 @@ export interface ChartData {
     cutout: number;
   }[];
 }
+
+export interface UpdateTransactionFormProps {
+  transactionId: string; // The ID of the transaction to update
+  initialData: {
+    description: string;
+    paymentType: string;
+    category: string;
+    amount: string;
+    location: string;
+    date: string;
+  };
+}

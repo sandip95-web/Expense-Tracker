@@ -10,11 +10,12 @@ export interface User {
 }
 export interface Transaction {
   _id: string;
-  userId:string;
+  userId:mongoose.Schema.Types.ObjectId;
   description: string;
   paymentType: string;
   category: string;
   amount: number;
   location: string;
   date: Date;
+  transactionId?:string;
 }
